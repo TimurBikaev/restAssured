@@ -1,10 +1,13 @@
 package org.crudcrud;
 
 
+import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.internal.mapping.Jackson1Mapper;
 import org.apache.http.HttpStatus;
+import org.crudcrud.models.Student;
 import org.junit.jupiter.api.BeforeAll;
 
 import static io.restassured.RestAssured.given;
@@ -23,13 +26,18 @@ public class Test {
     @org.junit.jupiter.api.Test
     public void userShouldBeAbleCreateStudent() {
 
-        String body = "{"
-                + "\"name\": \"Timur\","
-                + "\"grade\": 2"
-                + "}";
+        //Сериализация из JSON в объект и наоборот
+//        String body = "{"
+//                + "\"name\": \"Timur\","
+//                + "\"grade\": 2"
+//                + "}";
 
+        //Создадим объект класса студент с нужными параметрами
+        Student student1 = new Student("Timur", 2);
+
+        //Передадим в метод создания студента
         Methods methods = new Methods();
-        methods.createStudent(body);
+        methods.createStudent(student1.toString()); // получим json из объекта
 
 
         /** получаем ответ в виде
@@ -52,7 +60,20 @@ public class Test {
                 + "\"grade\": 2"
                 + "}";
 
-        String userId = Methods.createStudent(body);
+        //Создадим объект класса студент с нужными параметрами
+        Student student2 = new Student("Tom", 3);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(student2); //перевод объекта в json
+        Student obj = gson.fromJson(json, Student.class);
+
+        System.out.println( "GSON to json " + json);
+        // Выводим объект
+        System.out.println("GSON to obj " + obj);
+        System.out.println(obj.toString());
+
+        //Передадим на создание
+        String userId = Methods.createStudent(json);
 
 
         //проверка что можем получить созданного студента
